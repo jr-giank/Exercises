@@ -3,12 +3,9 @@ import requests
 import os
 
 cat_facts = requests.get('https://catfact.ninja/facts').json()
-
 tpl_dir = jinja2.FileSystemLoader('.')
-
 tpl_env = jinja2.Environment(loader=tpl_dir)
-
-template = tpl_env.get_template('index.tpl')
+template = tpl_env.get_template('index.html')
 
 datos = {
     'title': 'Cat Facts',

@@ -1,9 +1,7 @@
 from flask import Flask, jsonify
 import sqlite3
 
-data = []
-
-def select(columns=None, table=None, joins=None):
+def select(id = None, columns=None, table=None, joins=False):
 
     if columns:
 
@@ -16,58 +14,46 @@ def select(columns=None, table=None, joins=None):
             else:
                 column = column + ', ' + col
 
-        return f'select {column} from {table}'
+        return f'select {column} from {table} where id={id}'
 
     if joins:
 
-        tables = ''
+        return 'select user.id, user.username, user.password, user.profile_picture, user.user_full_name,  user_role_association_table.user_id,  user_role_association_table.role_id, role.id, role.name, role.description from user inner join user_role_association_table on user_role_association_table.user_id=user.id inner join role on role.id=user_role_association_table.user_id'
 
-        for table in joins:
-
-            if tables == '':
-                tables = table 
-            else:
-                if table == joins[len(joins)-1]:
-                    tables = f'{tables} {table}'
-                else:
-                    tables = f'{tables} {table} inner join '
-
-        return f'select * from {tables}'
-
-    return f'select * from {table}'
-
-try:
-    sql_connection = sqlite3.connect('../sitio.db')
-    cursor = sql_connection.cursor()
-
-    print('Successfully connected to the DataBase')
-
-    proyectos_query = select(columns=['id', 'project_name'], table='project')
-    cursor.execute(proyectos_query)
-
-    proyectos = cursor.fetchall()
-
-    usuarios_query = select(joins=['user', 'user_role_association_table', 'role'])
-    cursor.execute(usuarios_query)
-
-    usuarios = cursor.fetchall()
-
-    data = {"projects": proyectos, "users": usuarios}
-
-except sqlite3.Error as error:
-    print('Error while connecting', error)
-
-finally:
-    if sql_connection:
-        sql_connection.close()
-        print('The connection with de DB in closed')
+    return 'select * from project'
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
+@app.route('/proyecto/<id_proyecto>')
+def home(id_proyecto):
+
+    try:
+        sql_connection = sqlite3.connect('../sitio.db')
+        cursor = sql_connection.cursor()
+
+        print('Successfully connected to the DataBase')
+
+        proyectos_query = select(id=id_proyecto, columns=['project_name'], table='project')
+        cursor.execute(proyectos_query)
+
+        proyectos = cursor.fetchall()
+
+        usuarios_query = select(joins=True)
+        cursor.execute(usuarios_query)
+
+        usuarios = cursor.fetchall()
+
+        data = {"projects": proyectos, "users": usuarios}
+
+    except sqlite3.Error as error:
+        print('Error while connecting', error)
+
+    finally:
+        if sql_connection:
+            sql_connection.close()
+            print('The connection with de DB in closed')
 
     return jsonify(data=str(data))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
