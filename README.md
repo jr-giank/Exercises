@@ -11,7 +11,7 @@ Para correr los diferentes programas debera crear un ambiente virtual de python 
 Importe el módulo jinja2.
 importar el módulo requests o uno equivalente.
 hacer un llamado al api https://catfact.ninja/ para traer una lista de hechos sobre los gatos.
-hacer una plantilla html con una lista simple (<ul>y <li>) en donde se itere sobre la lista de hechos sobre los gatos.
+hacer una plantilla html con una lista simple ( ul y li) en donde se itere sobre la lista de hechos sobre los gatos.
 cargar la plantilla con el módulo jinja2 y renderizarla con los hechos sobre los gatos.
 imprimir en la consola el resultado de del renderizado del template de jinja2.
 debe imprimir el html de una lista desordenada (ul) donde cada item (li) es un hecho sobre los gatos.
